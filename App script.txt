@@ -1,0 +1,32 @@
+function updateBlynkData() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  var token = "EueOS80dBNTM0gaNp6HlHflDtbNL6ZjD";  // ใส่ Blynk Auth Token ของคุณที่นี่
+  var url = "https://sgp1.blynk.cloud/external/api/getAll?token=" + token;
+  
+  try {
+    var response = UrlFetchApp.fetch(url);  // ดึงข้อมูลจาก Blynk API
+    var text = response.getContentText();  // รับข้อความตอบกลับเป็น text
+    Logger.log("Response Text: " + text);  // พิมพ์ข้อความตอบกลับเพื่อดูข้อมูล
+    
+    var data = {};
+    
+    try {
+      data = JSON.parse(text);  // แปลงข้อความเป็น JSON
+    } catch (e) {
+      Logger.log("Failed to parse JSON: " + e.toString());
+    }
+    
+    var rowData = [
+      data.v1 || "N/A",  // ใช้ค่าที่ถูกต้องจาก JSON หรือ "N/A" หากไม่พบค่า
+      data.v2 || "N/A",
+      data.v3 || "N/A",
+      data.v4 || "N/A",  // ใช้ค่าที่ถูกต้องจาก JSON หรือ "N/A" หากไม่พบค่า
+      data.v5 || "N/A"
+    ];
+    
+    sheet.appendRow(rowData);  // เพิ่มข้อมูลลงใน Sheet
+  } catch (e) {
+    Logger.log("Error: " + e.toString());
+  }
+}
